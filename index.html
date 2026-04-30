@@ -829,7 +829,7 @@ function renderRows(rows) {
   const container = document.getElementById('admin-rows');
   if (!rows.length) { container.innerHTML = '<div class="admin-empty">Aucun dossier trouvé.</div>'; return; }
   container.innerHTML = rows.map(r => `
-    <div class="admin-row" onclick="openModal('${r.id}')">
+    <div class="admin-row" onclick="openModal(${r.id})">
       <div class="admin-td"><strong>${r.firstname} ${r.lastname}</strong></div>
       <div class="admin-td gold" style="font-size:12px;">${r.property}</div>
       <div class="admin-td muted">${formatDate(r.checkin)}</div>
@@ -846,7 +846,7 @@ function formatDate(d) {
 }
 
 function openModal(id) {
-  const r = allRecords.find(x => x.id === id);
+  const r = allRecords.find(x => x.id == id);
   if (!r) return;
 
   const addGuests = (r.additional_guests || []).map((g,i) => `
