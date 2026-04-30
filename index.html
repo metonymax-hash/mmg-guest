@@ -605,13 +605,14 @@
       </div>
       <div class="field">
         <label data-fr="Nombre de voyageurs <span>*</span>" data-en="Number of guests <span>*</span>">Nombre de voyageurs <span>*</span></label>
-        <select id="guests">
+        <select id="guests" onchange="updateGuestForms()">
           <option value="">—</option>
           <option>1</option><option>2</option><option>3</option><option>4</option>
           <option>5</option><option>6</option><option>7</option><option>8</option>
         </select>
       </div>
     </div>
+    <div id="additional-guests-container" style="margin-bottom:16px;"></div>
     <div class="field-grid three">
       <div class="field">
         <label data-fr="Date d'arrivée <span>*</span>" data-en="Check-in date <span>*</span>">Date d'arrivée <span>*</span></label>
@@ -871,6 +872,37 @@ const contracts = {
   }
 };
 
+// ─── ADDITIONAL GUESTS ───────────────────────────────────────────────────────
+function updateGuestForms() {
+  const n = parseInt(document.getElementById('guests').value) || 0;
+  const container = document.getElementById('additional-guests-container');
+  container.innerHTML = '';
+  if (n <= 1) return;
+
+  for (let i = 2; i <= n; i++) {
+    const label = lang === 'fr' ? `Voyageur ${i}` : `Guest ${i}`;
+    const div = document.createElement('div');
+    div.style.cssText = 'background:var(--white);border:1px solid var(--border);border-radius:4px;padding:16px;margin-bottom:12px;';
+    div.innerHTML = `
+      <div style="font-size:10px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;">${label}</div>
+      <div class="field-grid">
+        <div class="field">
+          <label>${lang === 'fr' ? 'Prénom' : 'First name'}</label>
+          <input type="text" id="guest-fn-${i}" placeholder="${lang === 'fr' ? 'Prénom' : 'First name'}">
+        </div>
+        <div class="field">
+          <label>${lang === 'fr' ? 'Nom' : 'Last name'}</label>
+          <input type="text" id="guest-ln-${i}" placeholder="${lang === 'fr' ? 'Nom' : 'Last name'}">
+        </div>
+      </div>
+      <div class="field">
+        <label>${lang === 'fr' ? 'Nationalité' : 'Nationality'}</label>
+        <input type="text" id="guest-nat-${i}" placeholder="${lang === 'fr' ? 'Nationalité' : 'Nationality'}">
+      </div>`;
+    container.appendChild(div);
+  }
+}
+
 // ─── LANG ─────────────────────────────────────────────────────────────────────
 function setLang(l, btn) {
   lang = l;
@@ -917,7 +949,7 @@ function goStep(n) {
   }
 
   currentStep = n;
-  if (n === 3) updateContract();
+  if (n === 3) { updateContract(); setTimeout(initSig, 50); }
 
   window.scrollTo({ top: document.getElementById('form-container').offsetTop - 20, behavior: 'smooth' });
 }
@@ -960,22 +992,31 @@ function handleFile(input) {
 // ─── SIGNATURE ────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   emailjs.init(EMAILJS_PUBLIC_KEY);
-  const canvas = document.getElementById('signature-pad');
-  sigPad = new SignaturePad(canvas, { penColor: '#1A1814', minWidth: 1, maxWidth: 2.5 });
-  resizeSig();
   window.addEventListener('resize', resizeSig);
 });
 
+function initSig() {
+  const canvas = document.getElementById('signature-pad');
+  if (!sigPad) {
+    sigPad = new SignaturePad(canvas, { penColor: '#1A1814', minWidth: 1, maxWidth: 2.5 });
+  } else {
+    sigPad.clear();
+  }
+  resizeSig();
+}
+
 function resizeSig() {
   const canvas = document.getElementById('signature-pad');
+  if (!canvas) return;
+  const data = sigPad ? sigPad.toData() : [];
   const ratio = Math.max(window.devicePixelRatio || 1, 1);
   canvas.width = canvas.offsetWidth * ratio;
   canvas.height = 140 * ratio;
   canvas.getContext('2d').scale(ratio, ratio);
-  if (sigPad) sigPad.clear();
+  if (sigPad) { sigPad.clear(); if (data.length) sigPad.fromData(data); }
 }
 
-function clearSig() { sigPad.clear(); }
+function clearSig() { if (sigPad) sigPad.clear(); }
 
 // ─── SUBMIT ───────────────────────────────────────────────────────────────────
 async function submitForm() {
@@ -998,20 +1039,38 @@ async function submitForm() {
 
   const props = { levylier: 'La Suite Levylier', victor: 'Appartement Victor Hugo' };
 
+  // Build additional guests string
+  const numGuests = parseInt(document.getElementById('guests').value) || 1;
+  let guestLines = '';
+  for (let i = 2; i <= numGuests; i++) {
+    const fn = document.getElementById('guest-fn-' + i)?.value || '';
+    const ln = document.getElementById('guest-ln-' + i)?.value || '';
+    const nat = document.getElementById('guest-nat-' + i)?.value || '';
+    if (fn || ln) guestLines += `\nVoyageur ${i}: ${fn} ${ln} — ${nat}`;
+  }
+
+  // Compress signature to smaller size for EmailJS limit
+  const sigCanvas = document.getElementById('signature-pad');
+  const smallCanvas = document.createElement('canvas');
+  smallCanvas.width = 400; smallCanvas.height = 90;
+  smallCanvas.getContext('2d').drawImage(sigCanvas, 0, 0, 400, 90);
+  const sigData = sigPad.isEmpty() ? '' : smallCanvas.toDataURL('image/png', 0.5);
+
   const params = {
-    to_email:    RECIPIENT_EMAIL,
-    property:    props[selectedProperty],
-    firstname:   document.getElementById('firstname').value,
-    lastname:    document.getElementById('lastname').value,
-    email:       document.getElementById('email').value,
-    phone:       document.getElementById('phone').value,
-    nationality: document.getElementById('nationality').value,
-    guests:      document.getElementById('guests').value,
-    checkin:     document.getElementById('checkin').value,
-    checkout:    document.getElementById('checkout').value,
-    arrival:     document.getElementById('arrival-time').value,
-    signature:   sigPad.toDataURL(),
-    id_filename: uploadedFile ? uploadedFile.name : 'Non fourni',
+    to_email:       RECIPIENT_EMAIL,
+    property:       props[selectedProperty],
+    firstname:      document.getElementById('firstname').value,
+    lastname:       document.getElementById('lastname').value,
+    email:          document.getElementById('email').value,
+    phone:          document.getElementById('phone').value,
+    nationality:    document.getElementById('nationality').value,
+    guests:         document.getElementById('guests').value,
+    other_guests:   guestLines || 'Voyageur principal uniquement',
+    checkin:        document.getElementById('checkin').value,
+    checkout:       document.getElementById('checkout').value,
+    arrival:        document.getElementById('arrival-time').value,
+    signature:      sigData,
+    id_filename:    uploadedFile ? uploadedFile.name : 'Non fourni',
   };
 
   try {
