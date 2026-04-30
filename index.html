@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MMG Conseil – La Sélection | Enregistrement voyageur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+<style>
+  :root {
+    --sand: #F5F0E8;
+    --sand-dark: #EDE5D5;
+    --ink: #1A1814;
+    --ink-light: #4A4540;
+    --gold: #B8965A;
+    --gold-light: #D4B07A;
+    --white: #FDFCFA;
+    --border: rgba(26,24,20,0.12);
+    --radius: 2px;
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body: 'Jost', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--sand);
+    color: var(--ink);
+    min-height: 100vh;
+    font-weight: 300;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--ink);
+    padding: 28px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-logo {
+    font-family: var(--font-display);
+    color: var(--white);
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+  }
+  .header-logo span { color: var(--gold); }
+  .lang-toggle {
+    display: flex;
+    gap: 4px;
+  }
+  .lang-btn {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.6);
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: var(--radius);
+  }
+  .lang-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--ink);
+  }
+
+  /* HERO */
+  .hero {
+    background: var(--ink);
+    padding: 60px 40px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0; right: 0;
+    height: 40px;
+    background: var(--sand);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+  .hero-eyebrow {
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 300;
+    color: var(--white);
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+  .hero-title em { font-style: italic; color: var(--gold-light); }
+  .hero-sub {
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 300;
+    letter-spacing: 0.02em;
+  }
+
+  /* PROPERTY SELECTOR */
+  .property-select-wrap {
+    max-width: 680px;
+    margin: -24px auto 0;
+    padding: 0 24px;
+    position: relative;
+    z-index: 10;
+  }
+  .property-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .prop-card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    padding: 20px 20px 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+  }
+  .prop-card:hover { border-color: var(--gold); }
+  .prop-card.selected {
+    border-color: var(--gold);
+    background: #FFFDF8;
+    box-shadow: 0 0 0 3px rgba(184,150,90,0.12);
+  }
+  .prop-card-label {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .prop-card-name {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+  .prop-card-addr {
+    font-size: 11px;
+    color: var(--ink-light);
+    font-weight: 300;
+  }
+  .prop-card-check {
+    width: 18px; height: 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 50%;
+    margin-top: 12px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .prop-card.selected .prop-card-check {
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+  .prop-card-check::after {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: white;
+    display: none;
+  }
+  .prop-card.selected .prop-card-check::after { display: block; }
+
+  /* MAIN FORM AREA */
+  .form-container {
+    max-width: 680px;
+    margin: 32px auto 60px;
+    padding: 0 24px;
+  }
+
+  /* STEPS */
+  .steps-nav {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 32px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .step-nav-item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: rgba(26,24,20,0.35);
+    border-right: 1px solid var(--border);
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .step-nav-item:last-child { border-right: none; }
+  .step-nav-item.active { color: var(--ink); background: #FFFDF8; }
+  .step-nav-item.done { color: var(--gold); }
+  .step-num {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+  .step-nav-item.done .step-num {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: white;
+  }
+  .step-nav-item.done .step-num::after { content: '✓'; font-size: 9px; }
+  .step-nav-item:not(.done) .step-num-inner { display: block; }
+
+  /* FORM SECTIONS */
+  .form-section { display: none; }
+  .form-section.active { display: block; animation: fadeUp 0.3s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 300;
+    margin-bottom: 4px;
+    color: var(--ink);
+  }
+  .section-title em { font-style: italic; color: var(--gold); }
+  .section-sub {
+    font-size: 13px;
+    color: var(--ink-light);
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
+
+  /* FIELDS */
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .field-grid.full { grid-template-columns: 1fr; }
+  .field-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .field label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+  .field label span { color: var(--gold); }
+  .field input, .field select {
+    border: 1px solid var(--border);
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 11px 14px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+    appearance: none;
+  }
+  .field input:focus, .field select:focus { border-color: var(--gold); }
+  .field input.error { border-color: #C0392B; }
+
+  /* UPLOAD */
+  .upload-zone {
+    border: 1.5px dashed var(--border);
+    border-radius: 4px;
+    padding: 32px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--white);
+    margin-bottom: 16px;
+  }
+  .upload-zone:hover { border-color: var(--gold); background: #FFFDF8; }
+  .upload-zone.has-file { border-color: var(--gold); border-style: solid; background: #FFFDF8; }
+  .upload-icon {
+    width: 40px; height: 40px;
+    margin: 0 auto 12px;
+    opacity: 0.4;
+  }
+  .upload-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .upload-sub { font-size: 12px; color: var(--ink-light); font-weight: 300; }
+  .upload-filename {
+    font-size: 13px;
+    color: var(--gold);
+    margin-top: 8px;
+    font-weight: 400;
+  }
+  #id-input { display: none; }
+
+  /* CONTRACT */
+  .contract-box {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px 28px;
+    max-height: 320px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--ink-light);
+    font-weight: 300;
+  }
+  .contract-box h3 {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 12px;
+    margin-top: 16px;
+  }
+  .contract-box h3:first-child { margin-top: 0; }
+  .contract-box p { margin-bottom: 8px; }
+  .contract-box ul { padding-left: 16px; margin-bottom: 8px; }
+  .contract-box ul li { margin-bottom: 4px; }
+
+  /* SIGNATURE */
+  .sig-wrap {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--white);
+    margin-bottom: 8px;
+  }
+  .sig-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--sand);
+  }
+  #signature-pad { display: block; width: 100%; height: 140px; cursor: crosshair; touch-action: none; }
+  .sig-clear {
+    font-size: 11px;
+    color: var(--ink-light);
+    cursor: pointer;
+    padding: 6px 14px;
+    text-align: right;
+    border-top: 1px solid var(--border);
+    background: var(--sand);
+    font-weight: 400;
+  }
+  .sig-clear:hover { color: var(--gold); }
+
+  /* CHECKBOX */
+  .checkbox-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  .checkbox-row input[type=checkbox] {
+    width: 16px; height: 16px;
+    margin-top: 1px;
+    flex-shrink: 0;
+    accent-color: var(--gold);
+    cursor: pointer;
+  }
+  .checkbox-row label {
+    font-size: 12px;
+    color: var(--ink-light);
+    font-weight: 300;
+    line-height: 1.6;
+    cursor: pointer;
+  }
+
+  /* BUTTONS */
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+  }
+  .btn-back {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-back:hover { color: var(--ink); }
+  .btn-next {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--white);
+    background: var(--ink);
+    border: none;
+    padding: 14px 32px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-next:hover { background: var(--gold); }
+  .btn-next:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-next.gold { background: var(--gold); }
+  .btn-next.gold:hover { background: var(--ink); }
+
+  /* SUCCESS */
+  .success-screen {
+    text-align: center;
+    padding: 60px 24px;
+  }
+  .success-icon {
+    width: 64px; height: 64px;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 24px;
+  }
+  .success-title {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 300;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .success-title em { font-style: italic; color: var(--gold); }
+  .success-sub {
+    font-size: 14px;
+    color: var(--ink-light);
+    font-weight: 300;
+    max-width: 400px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* ERROR */
+  .error-msg {
+    font-size: 11px;
+    color: #C0392B;
+    margin-top: 3px;
+    display: none;
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 24px 0;
+  }
+
+  .notice {
+    font-size: 11px;
+    color: var(--ink-light);
+    background: var(--sand-dark);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    font-weight: 300;
+  }
+
+  @media (max-width: 540px) {
+    .header { padding: 20px; }
+    .hero { padding: 40px 20px 60px; }
+    .property-cards { grid-template-columns: 1fr; }
+    .field-grid { grid-template-columns: 1fr; }
+    .field-grid.three { grid-template-columns: 1fr 1fr; }
+    .steps-nav { display: none; }
+    .prop-card-name { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">MMG Conseil <span>·</span> La Sélection</div>
+  <div class="lang-toggle">
+    <button class="lang-btn active" onclick="setLang('fr', this)">FR</button>
+    <button class="lang-btn" onclick="setLang('en', this)">EN</button>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-eyebrow" data-fr="Deauville · Enregistrement voyageur" data-en="Deauville · Guest Registration">Deauville · Enregistrement voyageur</div>
+  <h1 class="hero-title" data-fr="Bienvenue à <em>Deauville</em>" data-en="Welcome to <em>Deauville</em>">Bienvenue à <em>Deauville</em></h1>
+  <p class="hero-sub" data-fr="Complétez votre dossier avant votre arrivée — moins de 3 minutes" data-en="Complete your guest file before arrival — less than 3 minutes">Complétez votre dossier avant votre arrivée — moins de 3 minutes</p>
+</div>
+
+<!-- PROPERTY SELECTOR -->
+<div class="property-select-wrap">
+  <div class="property-cards">
+    <div class="prop-card" onclick="selectProperty('levylier', this)">
+      <div class="prop-card-label" data-fr="Appartement" data-en="Apartment">Appartement</div>
+      <div class="prop-card-name">La Suite Levylier</div>
+      <div class="prop-card-addr">110 Av. du Général Leclerc<br>14800 Deauville</div>
+      <div class="prop-card-check"></div>
+    </div>
+    <div class="prop-card" onclick="selectProperty('victor', this)">
+      <div class="prop-card-label" data-fr="Appartement" data-en="Apartment">Appartement</div>
+      <div class="prop-card-name">Appartement Victor Hugo</div>
+      <div class="prop-card-addr">1A Avenue Victor Hugo<br>14800 Deauville</div>
+      <div class="prop-card-check"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="form-container" id="form-container" style="display:none">
+
+  <div class="steps-nav">
+    <div class="step-nav-item active" id="snav-1">
+      <div class="step-num"><span class="step-nav-inner">1</span></div>
+      <span data-fr="Informations" data-en="Details">Informations</span>
+    </div>
+    <div class="step-nav-item" id="snav-2">
+      <div class="step-num"><span class="step-nav-inner">2</span></div>
+      <span data-fr="Identité" data-en="Identity">Identité</span>
+    </div>
+    <div class="step-nav-item" id="snav-3">
+      <div class="step-num"><span class="step-nav-inner">3</span></div>
+      <span data-fr="Contrat" data-en="Contract">Contrat</span>
+    </div>
+  </div>
+
+  <!-- STEP 1: INFO -->
+  <div class="form-section active" id="step-1">
+    <h2 class="section-title" data-fr="Vos <em>informations</em>" data-en="Your <em>details</em>">Vos <em>informations</em></h2>
+    <p class="section-sub" data-fr="Ces informations nous permettent de personnaliser votre séjour." data-en="This information helps us personalise your stay.">Ces informations nous permettent de personnaliser votre séjour.</p>
+
+    <div class="field-grid">
+      <div class="field">
+        <label data-fr="Prénom <span>*</span>" data-en="First name <span>*</span>">Prénom <span>*</span></label>
+        <input type="text" id="firstname" placeholder="Jean">
+      </div>
+      <div class="field">
+        <label data-fr="Nom <span>*</span>" data-en="Last name <span>*</span>">Nom <span>*</span></label>
+        <input type="text" id="lastname" placeholder="Dupont">
+      </div>
+    </div>
+    <div class="field-grid">
+      <div class="field">
+        <label data-fr="Email <span>*</span>" data-en="Email <span>*</span>">Email <span>*</span></label>
+        <input type="email" id="email" placeholder="jean@email.com">
+      </div>
+      <div class="field">
+        <label data-fr="Téléphone <span>*</span>" data-en="Phone <span>*</span>">Téléphone <span>*</span></label>
+        <input type="tel" id="phone" placeholder="+33 6 00 00 00 00">
+      </div>
+    </div>
+    <div class="field-grid">
+      <div class="field">
+        <label data-fr="Nationalité <span>*</span>" data-en="Nationality <span>*</span>">Nationalité <span>*</span></label>
+        <input type="text" id="nationality" placeholder="Française">
+      </div>
+      <div class="field">
+        <label data-fr="Nombre de voyageurs <span>*</span>" data-en="Number of guests <span>*</span>">Nombre de voyageurs <span>*</span></label>
+        <select id="guests">
+          <option value="">—</option>
+          <option>1</option><option>2</option><option>3</option><option>4</option>
+          <option>5</option><option>6</option><option>7</option><option>8</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-grid three">
+      <div class="field">
+        <label data-fr="Date d'arrivée <span>*</span>" data-en="Check-in date <span>*</span>">Date d'arrivée <span>*</span></label>
+        <input type="date" id="checkin">
+      </div>
+      <div class="field">
+        <label data-fr="Date de départ <span>*</span>" data-en="Check-out date <span>*</span>">Date de départ <span>*</span></label>
+        <input type="date" id="checkout">
+      </div>
+      <div class="field">
+        <label data-fr="Heure d'arrivée" data-en="Arrival time">Heure d'arrivée</label>
+        <input type="time" id="arrival-time" value="15:00">
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <div></div>
+      <button class="btn-next" onclick="goStep(2)" data-fr="Continuer →" data-en="Continue →">Continuer →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: ID -->
+  <div class="form-section" id="step-2">
+    <h2 class="section-title" data-fr="Pièce d'<em>identité</em>" data-en="<em>Identity</em> document">Pièce d'<em>identité</em></h2>
+    <p class="section-sub" data-fr="Photo ou scan de votre passeport, carte d'identité ou permis de conduire." data-en="Photo or scan of your passport, ID card or driving licence.">Photo ou scan de votre passeport, carte d'identité ou permis de conduire.</p>
+
+    <div class="notice" data-fr="🔒 Vos données sont transmises de manière sécurisée et conservées conformément au RGPD." data-en="🔒 Your data is transmitted securely and stored in accordance with GDPR.">🔒 Vos données sont transmises de manière sécurisée et conservées conformément au RGPD.</div>
+
+    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('id-input').click()">
+      <svg class="upload-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="8" width="32" height="24" rx="2" stroke="#1A1814" stroke-width="1.5"/>
+        <circle cx="14" cy="18" r="4" stroke="#1A1814" stroke-width="1.5"/>
+        <path d="M4 28L12 20L18 26L24 20L36 32" stroke="#1A1814" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <div class="upload-title" data-fr="Déposer votre document ici" data-en="Drop your document here">Déposer votre document ici</div>
+      <div class="upload-sub" data-fr="JPG, PNG ou PDF · max 10 Mo" data-en="JPG, PNG or PDF · max 10 MB">JPG, PNG ou PDF · max 10 Mo</div>
+      <div class="upload-filename" id="upload-filename"></div>
+    </div>
+    <input type="file" id="id-input" accept="image/*,.pdf" onchange="handleFile(this)">
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="goStep(1)">← <span data-fr="Retour" data-en="Back">Retour</span></button>
+      <button class="btn-next" onclick="goStep(3)" data-fr="Continuer →" data-en="Continue →">Continuer →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: CONTRACT -->
+  <div class="form-section" id="step-3">
+    <h2 class="section-title" data-fr="<em>Contrat</em> de séjour" data-en="Stay <em>contract</em>"><em>Contrat</em> de séjour</h2>
+    <p class="section-sub" data-fr="Lisez attentivement puis signez ci-dessous." data-en="Please read carefully and sign below.">Lisez attentivement puis signez ci-dessous.</p>
+
+    <div class="contract-box" id="contract-text">
+      <!-- injected by JS -->
+    </div>
+
+    <div class="sig-wrap">
+      <div class="sig-label" data-fr="Votre signature" data-en="Your signature">Votre signature</div>
+      <canvas id="signature-pad" width="630" height="140"></canvas>
+      <div class="sig-clear" onclick="clearSig()" data-fr="Effacer la signature" data-en="Clear signature">Effacer la signature</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="accept-contract">
+      <label for="accept-contract" data-fr="J'ai lu et j'accepte le contrat de séjour et le règlement intérieur ci-dessus." data-en="I have read and accept the rental contract and house rules above.">J'ai lu et j'accepte le contrat de séjour et le règlement intérieur ci-dessus.</label>
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="accept-gdpr">
+      <label for="accept-gdpr" data-fr="J'accepte que mes données personnelles soient traitées dans le cadre de ce séjour, conformément au RGPD." data-en="I agree that my personal data may be processed for the purposes of this stay, in accordance with GDPR.">J'accepte que mes données personnelles soient traitées dans le cadre de ce séjour, conformément au RGPD.</label>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="goStep(2)">← <span data-fr="Retour" data-en="Back">Retour</span></button>
+      <button class="btn-next gold" id="submit-btn" onclick="submitForm()" data-fr="Envoyer mon dossier" data-en="Submit my file">Envoyer mon dossier</button>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="form-section" id="step-success">
+    <div class="success-screen">
+      <div class="success-icon">✓</div>
+      <h2 class="success-title" data-fr="Dossier <em>envoyé</em>" data-en="File <em>received</em>">Dossier <em>envoyé</em></h2>
+      <p class="success-sub" id="success-msg" data-fr="Merci ! Votre dossier a bien été transmis. Vous recevrez les instructions d'accès par email avant votre arrivée." data-en="Thank you! Your file has been received. You will receive access instructions by email before your arrival.">Merci ! Votre dossier a bien été transmis. Vous recevrez les instructions d'accès par email avant votre arrivée.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+const EMAILJS_PUBLIC_KEY  = 'YOUR_EMAILJS_PUBLIC_KEY';
+const EMAILJS_SERVICE_ID  = 'YOUR_EMAILJS_SERVICE_ID';
+const EMAILJS_TEMPLATE_ID = 'YOUR_EMAILJS_TEMPLATE_ID';
+const RECIPIENT_EMAIL     = 'contact@laselection-immobilier.fr';
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let lang = 'fr';
+let selectedProperty = null;
+let uploadedFile = null;
+let sigPad = null;
+let currentStep = 1;
+
+// ─── CONTRACTS ────────────────────────────────────────────────────────────────
+const contracts = {
+  levylier: {
+    fr: `
+<h3>Contrat de séjour — La Suite Levylier</h3>
+<p>110 Avenue du Général Leclerc, 14800 Deauville<br>Opérateur : MMG Conseil – La Sélection, 19 rue Cler, 75007 Paris</p>
+
+<h3>1. Conditions générales</h3>
+<p>Le présent contrat régit les conditions de votre séjour dans le logement. En signant ce document, vous vous engagez à respecter l'ensemble des dispositions ci-dessous.</p>
+
+<h3>2. Règlement intérieur</h3>
+<ul>
+  <li>Le logement est mis à disposition exclusivement pour les personnes déclarées lors de la réservation.</li>
+  <li>Il est strictement interdit d'organiser des fêtes ou événements dans le logement.</li>
+  <li>Le calme doit être respecté de 22h à 8h.</li>
+  <li>Il est interdit de fumer à l'intérieur du logement.</li>
+  <li>Les animaux de compagnie ne sont pas admis sans autorisation préalable.</li>
+  <li>Le logement doit être restitué dans un état propre et rangé.</li>
+</ul>
+
+<h3>3. Accès et parking</h3>
+<ul>
+  <li>Accueil en direct à votre arrivée — merci de confirmer votre heure d'arrivée.</li>
+  <li>Code portail entrée : 1512 — sortie : 1512E.</li>
+  <li>Place de parking réservée : n° 12 (au bout du parking).</li>
+</ul>
+
+<h3>4. Responsabilité</h3>
+<p>Le locataire est responsable de tout dommage causé au logement ou à son mobilier pendant la durée du séjour. Tout dommage constaté sera signalé et pourra faire l'objet d'une retenue sur caution.</p>
+
+<h3>5. Check-out</h3>
+<p>Le départ doit avoir lieu avant 11h00. Les clés doivent être remises à l'opérateur ou à son représentant.</p>
+
+<h3>6. Données personnelles</h3>
+<p>Les informations collectées sont utilisées uniquement dans le cadre de votre séjour et de la réglementation en vigueur (déclaration aux autorités si requis). Elles ne seront pas cédées à des tiers.</p>
+    `,
+    en: `
+<h3>Rental Contract — La Suite Levylier</h3>
+<p>110 Avenue du Général Leclerc, 14800 Deauville<br>Operator: MMG Conseil – La Sélection, 19 rue Cler, 75007 Paris</p>
+
+<h3>1. General conditions</h3>
+<p>This contract governs the conditions of your stay in the accommodation. By signing this document, you agree to comply with all provisions below.</p>
+
+<h3>2. House rules</h3>
+<ul>
+  <li>The accommodation is made available exclusively to persons declared at the time of booking.</li>
+  <li>Parties or events in the accommodation are strictly prohibited.</li>
+  <li>Quiet hours must be respected from 10pm to 8am.</li>
+  <li>Smoking inside the accommodation is prohibited.</li>
+  <li>Pets are not permitted without prior authorisation.</li>
+  <li>The accommodation must be returned in a clean and tidy condition.</li>
+</ul>
+
+<h3>3. Access & parking</h3>
+<ul>
+  <li>In-person welcome upon arrival — please confirm your estimated arrival time.</li>
+  <li>Gate code entry: 1512 — exit: 1512E.</li>
+  <li>Reserved parking space: n° 12 (at the far end of the car park).</li>
+</ul>
+
+<h3>4. Liability</h3>
+<p>The guest is responsible for any damage caused to the accommodation or its furnishings during the stay. Any damage identified may result in a deduction from the security deposit.</p>
+
+<h3>5. Check-out</h3>
+<p>Departure must take place before 11:00am. Keys must be returned to the operator or their representative.</p>
+
+<h3>6. Personal data</h3>
+<p>Information collected is used solely for the purposes of your stay and applicable regulations. It will not be shared with third parties.</p>
+    `
+  },
+  victor: {
+    fr: `
+<h3>Contrat de séjour — Appartement Victor Hugo</h3>
+<p>1A Avenue Victor Hugo, 14800 Deauville<br>Opérateur : MMG Conseil – La Sélection, 19 rue Cler, 75007 Paris</p>
+
+<h3>1. Conditions générales</h3>
+<p>Le présent contrat régit les conditions de votre séjour dans le logement. En signant ce document, vous vous engagez à respecter l'ensemble des dispositions ci-dessous.</p>
+
+<h3>2. Règlement intérieur</h3>
+<ul>
+  <li>Le logement est mis à disposition exclusivement pour les personnes déclarées lors de la réservation.</li>
+  <li>Il est strictement interdit d'organiser des fêtes ou événements dans le logement.</li>
+  <li>Le calme doit être respecté de 22h à 8h.</li>
+  <li>Il est interdit de fumer à l'intérieur du logement.</li>
+  <li>Les animaux de compagnie ne sont pas admis sans autorisation préalable.</li>
+  <li>Le logement doit être restitué dans un état propre et rangé.</li>
+</ul>
+
+<h3>3. Accès</h3>
+<ul>
+  <li>Accès en autonomie via boîte à clés à la porte d'entrée.</li>
+  <li>Code boîte à clés : 1974.</li>
+  <li>Les clés doivent être remises dans la boîte à clés au départ.</li>
+</ul>
+
+<h3>4. Responsabilité</h3>
+<p>Le locataire est responsable de tout dommage causé au logement ou à son mobilier pendant la durée du séjour. Tout dommage constaté sera signalé et pourra faire l'objet d'une retenue sur caution.</p>
+
+<h3>5. Check-out</h3>
+<p>Le départ doit avoir lieu avant 11h00. Les clés doivent être remises dans la boîte à clés (code 1974).</p>
+
+<h3>6. Données personnelles</h3>
+<p>Les informations collectées sont utilisées uniquement dans le cadre de votre séjour et de la réglementation en vigueur. Elles ne seront pas cédées à des tiers.</p>
+    `,
+    en: `
+<h3>Rental Contract — Appartement Victor Hugo</h3>
+<p>1A Avenue Victor Hugo, 14800 Deauville<br>Operator: MMG Conseil – La Sélection, 19 rue Cler, 75007 Paris</p>
+
+<h3>1. General conditions</h3>
+<p>This contract governs the conditions of your stay in the accommodation. By signing this document, you agree to comply with all provisions below.</p>
+
+<h3>2. House rules</h3>
+<ul>
+  <li>The accommodation is made available exclusively to persons declared at the time of booking.</li>
+  <li>Parties or events in the accommodation are strictly prohibited.</li>
+  <li>Quiet hours must be respected from 10pm to 8am.</li>
+  <li>Smoking inside the accommodation is prohibited.</li>
+  <li>Pets are not permitted without prior authorisation.</li>
+  <li>The accommodation must be returned in a clean and tidy condition.</li>
+</ul>
+
+<h3>3. Access</h3>
+<ul>
+  <li>Self check-in via key box at the front door.</li>
+  <li>Key box code: 1974.</li>
+  <li>Keys must be returned to the key box upon departure.</li>
+</ul>
+
+<h3>4. Liability</h3>
+<p>The guest is responsible for any damage caused to the accommodation or its furnishings during the stay. Any damage identified may result in a deduction from the security deposit.</p>
+
+<h3>5. Check-out</h3>
+<p>Departure must take place before 11:00am. Keys must be returned to the key box (code: 1974).</p>
+
+<h3>6. Personal data</h3>
+<p>Information collected is used solely for the purposes of your stay and applicable regulations. It will not be shared with third parties.</p>
+    `
+  }
+};
+
+// ─── LANG ─────────────────────────────────────────────────────────────────────
+function setLang(l, btn) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('[data-fr]').forEach(el => {
+    const txt = el.getAttribute('data-' + l);
+    if (txt) el.innerHTML = txt;
+  });
+  if (selectedProperty) updateContract();
+}
+
+// ─── PROPERTY ────────────────────────────────────────────────────────────────
+function selectProperty(id, card) {
+  selectedProperty = id;
+  document.querySelectorAll('.prop-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  const fc = document.getElementById('form-container');
+  fc.style.display = 'block';
+  fc.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (currentStep === 3) updateContract();
+}
+
+function updateContract() {
+  const box = document.getElementById('contract-text');
+  if (selectedProperty && contracts[selectedProperty]) {
+    box.innerHTML = contracts[selectedProperty][lang] || contracts[selectedProperty]['fr'];
+  }
+}
+
+// ─── STEP NAV ─────────────────────────────────────────────────────────────────
+function goStep(n) {
+  if (n > 1 && !validateStep(currentStep)) return;
+
+  document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-' + n)?.classList.add('active');
+
+  for (let i = 1; i <= 3; i++) {
+    const nav = document.getElementById('snav-' + i);
+    if (!nav) continue;
+    nav.classList.remove('active', 'done');
+    if (i < n) nav.classList.add('done');
+    else if (i === n) nav.classList.add('active');
+  }
+
+  currentStep = n;
+  if (n === 3) updateContract();
+
+  window.scrollTo({ top: document.getElementById('form-container').offsetTop - 20, behavior: 'smooth' });
+}
+
+// ─── VALIDATION ───────────────────────────────────────────────────────────────
+function validateStep(n) {
+  if (!selectedProperty) {
+    alert(lang === 'fr' ? 'Veuillez sélectionner un logement.' : 'Please select a property.');
+    return false;
+  }
+  if (n === 1) {
+    const fields = ['firstname','lastname','email','phone','nationality','guests','checkin','checkout'];
+    let ok = true;
+    fields.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el.value.trim()) { el.classList.add('error'); ok = false; }
+      else el.classList.remove('error');
+    });
+    if (!ok) {
+      alert(lang === 'fr' ? 'Merci de remplir tous les champs obligatoires.' : 'Please fill in all required fields.');
+      return false;
+    }
+  }
+  if (n === 2 && !uploadedFile) {
+    alert(lang === 'fr' ? 'Merci de télécharger votre pièce d\'identité.' : 'Please upload your identity document.');
+    return false;
+  }
+  return true;
+}
+
+// ─── FILE UPLOAD ──────────────────────────────────────────────────────────────
+function handleFile(input) {
+  if (input.files && input.files[0]) {
+    uploadedFile = input.files[0];
+    document.getElementById('upload-filename').textContent = '✓ ' + uploadedFile.name;
+    document.getElementById('upload-zone').classList.add('has-file');
+  }
+}
+
+// ─── SIGNATURE ────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+  const canvas = document.getElementById('signature-pad');
+  sigPad = new SignaturePad(canvas, { penColor: '#1A1814', minWidth: 1, maxWidth: 2.5 });
+  resizeSig();
+  window.addEventListener('resize', resizeSig);
+});
+
+function resizeSig() {
+  const canvas = document.getElementById('signature-pad');
+  const ratio = Math.max(window.devicePixelRatio || 1, 1);
+  canvas.width = canvas.offsetWidth * ratio;
+  canvas.height = 140 * ratio;
+  canvas.getContext('2d').scale(ratio, ratio);
+  if (sigPad) sigPad.clear();
+}
+
+function clearSig() { sigPad.clear(); }
+
+// ─── SUBMIT ───────────────────────────────────────────────────────────────────
+async function submitForm() {
+  if (!document.getElementById('accept-contract').checked) {
+    alert(lang === 'fr' ? 'Merci d\'accepter le contrat de séjour.' : 'Please accept the rental contract.');
+    return;
+  }
+  if (!document.getElementById('accept-gdpr').checked) {
+    alert(lang === 'fr' ? 'Merci d\'accepter la politique de données.' : 'Please accept the data policy.');
+    return;
+  }
+  if (sigPad.isEmpty()) {
+    alert(lang === 'fr' ? 'Merci de signer le contrat.' : 'Please sign the contract.');
+    return;
+  }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = lang === 'fr' ? 'Envoi en cours…' : 'Sending…';
+
+  const props = { levylier: 'La Suite Levylier', victor: 'Appartement Victor Hugo' };
+
+  const params = {
+    to_email:    RECIPIENT_EMAIL,
+    property:    props[selectedProperty],
+    firstname:   document.getElementById('firstname').value,
+    lastname:    document.getElementById('lastname').value,
+    email:       document.getElementById('email').value,
+    phone:       document.getElementById('phone').value,
+    nationality: document.getElementById('nationality').value,
+    guests:      document.getElementById('guests').value,
+    checkin:     document.getElementById('checkin').value,
+    checkout:    document.getElementById('checkout').value,
+    arrival:     document.getElementById('arrival-time').value,
+    signature:   sigPad.toDataURL(),
+    id_filename: uploadedFile ? uploadedFile.name : 'Non fourni',
+  };
+
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
+    document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('step-success').classList.add('active');
+    for (let i = 1; i <= 3; i++) {
+      const nav = document.getElementById('snav-' + i);
+      if (nav) { nav.classList.remove('active'); nav.classList.add('done'); }
+    }
+  } catch (err) {
+    alert(lang === 'fr'
+      ? 'Une erreur est survenue. Merci de réessayer ou de nous contacter directement.'
+      : 'An error occurred. Please try again or contact us directly.');
+    btn.disabled = false;
+    btn.textContent = lang === 'fr' ? 'Envoyer mon dossier' : 'Submit my file';
+  }
+}
+</script>
+</body>
+</html>
